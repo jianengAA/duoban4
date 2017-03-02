@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.mapper.BookMapper">
+
+	  
+	<insert id="savebook" parameterType="Book" useGeneratedKeys="true" keyProperty="bid" >
+		insert into book  (bname,isbn,author,price,tid,pdfs,description) values(#{bname},#{isbn},#{author},#{price},#{category.tid},#{pdfs},#{description});
+	</insert>
+	
+	
+	<update id="updatbook" parameterType="Book" >
+		update book set bname=#{bname},isbn=#{isbn},author=#{author},price=#{price},tid=#{category.tid},description=#{description} 
+		<if test="pdfs!='' ">
+			 ,pdfs=#{pdfs}
+		</if>
+		where bid=#{bid};
+	</update>
+	
+	
+	<select id="selectOneBook" resultMap="BookResultMap" parameterType="Book">
+    	select * from book where bid=#{bid};
+  	</select>
+  	
+  	
+  	<select id="selectCate" resultMap="BookResultMap" parameterType="Book">
+    	select bid,bname,isbn,author,price,book.tid,name
+  		from book
+  		inner join category
+  		on category.tid=book.tid 
+    	where book.tid=#{category.tid};
+  	</select>
+	
+	<select id="selectAllBook" resultMap="BookResultMap">
+    	select * from book;
+  	</select>	
+  	
+  	
+  	<select id="getAllBooks" resultType="Book" resultMap="BookResultMap">
+  		select bid,bname,isbn,author,price,book.tid,name
+  		from book
+  		inner join category
+  		on category.tid=book.tid;
+  	</select>
+
+	<resultMap type="com.yc.bean.Book" id="BookResultMap">
+		<id property="bid" column="bid"/>
+		<result property="bname" column="bname"/>
+		<result property="isbn" column="isbn"/>
+		<result property="author" column="author"/>
+		<result property="price" column="price"/>
+		<result property="pdfs" column="pdfs"/>
+		<result property="description" column="description"/>
+		<association property="category"   javaType="com.yc.bean.Category">
+			<id property="tid" column="tid" />
+			<result property="name" column="name"/>
+		</association>
+	</resultMap>
+
+
+</mapper>
